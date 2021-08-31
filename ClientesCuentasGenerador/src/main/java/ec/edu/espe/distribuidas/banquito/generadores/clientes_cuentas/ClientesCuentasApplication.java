@@ -17,7 +17,6 @@ public class ClientesCuentasApplication {
     @Qualifier("generadorClientesCuentas")
     Job jobs;
     
-    
 	public static void main(String[] args) {
 		SpringApplication.run(ClientesCuentasApplication.class, args);
 	}

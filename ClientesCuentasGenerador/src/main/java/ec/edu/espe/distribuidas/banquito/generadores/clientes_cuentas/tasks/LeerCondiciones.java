@@ -41,20 +41,32 @@ public class LeerCondiciones implements Tasklet, StepExecutionListener{
     @Override
     public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
         log.info("Va a ejecutar la tarea leer condiciones");
-        log.info("El archivo con condiciones es: ()", this.applicationValues.getConfigFile());
+        log.info("El archivo con condiciones es: {}", this.applicationValues.getConfigFile());
         Properties props = new Properties();
         try {
             Path path = Path.of(this.applicationValues.getConfigFile());
             props.load(new FileInputStream(this.applicationValues.getConfigFile()));
 
             Integer clientes;
+            Integer porcentajeGanaDiario;
+            Integer porcentajeTarjetaCredito;
+            
+            
             try {
                 clientes = Integer.parseInt(props.getProperty("clientes"));
-                log.info("Va a generar {} personas", clientes);
-                ExecutionContext jobContext = sc.getStepExecution().getExecutionContext();
-                jobContext.put("records", clientes);
+                porcentajeGanaDiario = Integer.parseInt(props.getProperty("porcentajeClientesGanaDiario"));
+                porcentajeTarjetaCredito = Integer.parseInt(props.getProperty("porcentajeClientesTarjetaCredito"));
+                log.info("Va a generar {} clientes", clientes);
+                log.info("{} porcentaje cuentas Gana Diario", porcentajeGanaDiario);
+                log.info("{} porcentaje cuentas Tarjeta de Credito", porcentajeTarjetaCredito);
+                
+                ExecutionContext jobContext = cc.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
+                jobContext.put("clientes", clientes);
+                jobContext.put("porcentGanaDiario", porcentajeGanaDiario);
+                jobContext.put("porcentTajetaCredito", porcentajeTarjetaCredito);
+                
             } catch (NumberFormatException e) {
-                log.error("Invalid value for personas");
+                log.error("Invalid values");
             }
 
         } catch (IOException e) {
@@ -69,7 +81,4 @@ public class LeerCondiciones implements Tasklet, StepExecutionListener{
         log.info("Finalizo la ejecucion");
         return ExitStatus.COMPLETED;
     }
-    
-    
-    
 }

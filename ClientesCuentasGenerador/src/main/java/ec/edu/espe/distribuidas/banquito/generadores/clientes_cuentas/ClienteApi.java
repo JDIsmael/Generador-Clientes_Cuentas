@@ -33,7 +33,7 @@ public class ClienteApi extends Thread {
 
     @Override
     public void run() {
-        try {
+        /*try {
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target(URL);
             Invocation.Builder solicitud = target.request();
@@ -48,7 +48,7 @@ public class ClienteApi extends Thread {
         } catch (Exception e) {
             res = e.toString();
         }
-        System.out.println(res); 
+        System.out.println(res); */
     }
 
 }

@@ -5,30 +5,29 @@
  */
 package ec.edu.espe.distribuidas.banquito.generadores.clientes_cuentas.model;
 
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
 
 /**
  *
- * @author Admin
+ * @author jdismael
  */
 @Data
-public class Cliente {
-    
+public class Persona {
+
     private String id;
-    private String tipoIdentificacion;
     private String identificacion;
-    private String apellidoPaterno;
-    private String apellidoMaterno;
-    private String primerNombre;
-    private String segundoNombre;
+    private String nombres;
+    private String apellidos;
+    private String genero;
     private String provincia;
     private String canton;
     private String parroquia;
-    private String direccion;
-    private String telefono;
-    private String email;
-    private Date fechaNacimiento;
+    private String codigoDactilar;
+    private String nombrePadre;
+    private String nombreMadre;
     private String estadoCivil;
+    private Date fechaNacimiento;
     
 }

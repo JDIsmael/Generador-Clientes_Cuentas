@@ -21,51 +21,16 @@ import org.springframework.stereotype.Component;
 @ToString
 public class ApplicationValues {
     
-    private final String mongoHost;
-    private final String mongoDB;
-    private final String mongoAut;
-    private final String mongoUser;
-    private final String mongoPassword;
     private final String configFile;
     private final String dataPath;
     
     @Autowired
-    public ApplicationValues(@Value("${clientesCuentas.mongo.host}") String mongoHost,
-            @Value("${clientesCuentas.mongo.db}") String mongoDB,
-            @Value("${clientesCuentas.mongo.aut}") String mongoAut,
-            @Value("${clientesCuentas.mongo.usr}") String mongoUser,
-            @Value("${clientesCuentas.mongo.pwd}") String mongoPassword,
-            @Value("${clientesCuentas.config.file}") String configFile,
+    public ApplicationValues(@Value("${clientesCuentas.config.file}") String configFile,
             @Value("${clientesCuentas.config.dataPath}") String dataPath)
     {
-        this.mongoHost = mongoHost;
-        this.mongoDB = mongoDB;
-        this.mongoAut = mongoAut;
-        this.mongoUser = mongoUser;
-        this.mongoPassword = mongoPassword;
         this.configFile = configFile;
         this.dataPath = dataPath;
         log.info("Propiedades cargadas: " + this.toString());
-    }
-
-    public String getMongoHost() {
-        return mongoHost;
-    }
-
-    public String getMongoDB() {
-        return mongoDB;
-    }
-
-    public String getMongoAut() {
-        return mongoAut;
-    }
-
-    public String getMongoUser() {
-        return mongoUser;
-    }
-
-    public String getMongoPassword() {
-        return mongoPassword;
     }
 
     public static Logger getLog() {

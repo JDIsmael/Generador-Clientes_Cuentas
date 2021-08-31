@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  *
@@ -34,9 +33,6 @@ public class JobConfig {
     private StepBuilderFactory steps;
     
     @Autowired
-    private MongoTemplate mongoTemplate;
-    
-    @Autowired
     private ApplicationValues applicationValues;
     
     @Bean
@@ -51,7 +47,7 @@ public class JobConfig {
     protected Step generacionClientesCuentas(){
         return steps
                 .get("generacionPersona")
-                .tasklet(new GeneracionClientesCuentas(this.applicationValues, this.mongoTemplate))
+                .tasklet(new GeneracionClientesCuentas(this.applicationValues))
                 .build();
     }
     
