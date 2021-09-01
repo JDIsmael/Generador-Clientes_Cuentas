@@ -14,14 +14,13 @@ import lombok.Data;
  */
 @Data
 public class Cliente {
-    
-    private String id;
+
     private String tipoIdentificacion;
     private String identificacion;
     private String apellidoPaterno;
     private String apellidoMaterno;
-    private String primerNombre;
-    private String segundoNombre;
+    private String nombre1;
+    private String nombre2;
     private String provincia;
     private String canton;
     private String parroquia;
@@ -30,5 +29,4 @@ public class Cliente {
     private String email;
     private Date fechaNacimiento;
     private String estadoCivil;
-    
 }

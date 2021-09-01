@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
@@ -26,7 +27,6 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,12 +38,18 @@ import org.springframework.web.client.RestTemplate;
 public class GeneracionClientesCuentas implements Tasklet, StepExecutionListener {
 
     private final ApplicationValues applicationValues;
-    
+    private final String DIRECCION_FILE = "dir.txt";
     private RestTemplate restTemplate = new RestTemplate();
+   
     private Integer clientes;
     private Integer porcentajeGanaDiario;
     private Integer porcentajeTarjetaCredito;
+    
     private String tipoIdentificacion[] = {"CED", "PAS"};
+    private String dominioEmail[] = {"@hotmail.com", "@outlook.com", "@espe.edu.ec"
+            , "@gmail.com", "@yahoo.com", "@live.com"};
+    
+    private List<String> direcciones = new ArrayList<>();
 
     public GeneracionClientesCuentas(ApplicationValues applicationValues) {
         this.applicationValues = applicationValues;
@@ -52,11 +58,16 @@ public class GeneracionClientesCuentas implements Tasklet, StepExecutionListener
     @Override
     public void beforeStep(StepExecution se) {
         try {
+            
+            Path fileDirecciones = Paths.get(this.applicationValues.getDataPath() + this.DIRECCION_FILE);
+           this.direcciones = Files.readAllLines(fileDirecciones);
+            
             ExecutionContext sc = se.getJobExecution().getExecutionContext();
             this.clientes = (Integer) sc.get("clientes");
             this.porcentajeGanaDiario = (Integer) sc.get("porcentGanaDiario");
             this.porcentajeTarjetaCredito = (Integer) sc.get("porcentTajetaCredito");
             log.info("Va a generar {} clientes", this.clientes);
+            
             log.info("{} porcentaje cuentas Gana Diario", this.porcentajeGanaDiario);
             log.info("{} porcentaje cuentas Tarjeta de Credito", this.porcentajeTarjetaCredito);
         } catch (Exception e) {
@@ -78,11 +89,14 @@ public class GeneracionClientesCuentas implements Tasklet, StepExecutionListener
         Persona persona;
 
         for (int i = 0; i < this.clientes; i++) {
-            do {
+           do {
                 check = false;
-                persona = restTemplate.getForObject("http://34.135.165.97:8001/api/registrocivil/1719314172/A231AD311", Persona.class);
+                persona = restTemplate.getForObject("http://34.135.165.97:8001/api/registrocivil/ramdon/", Persona.class);
+                
+                //log.info("persona: {}",persona);
                 for (String id : ids)
                     if (id.equals(persona.getIdentificacion())) {
+                        log.info("repetido: {}",persona);
                         check = true;
                         break;
                     }
@@ -93,22 +107,44 @@ public class GeneracionClientesCuentas implements Tasklet, StepExecutionListener
             Cuenta cuenta = new Cuenta();
             Cliente cliente = new Cliente();
             String nombres[] = persona.getNombres().split(" ");
-            cliente.setTipoIdentificacion(tipoIdentificacion[r.nextInt(2)]);
-            cliente.setIdentificacion(persona.getIdentificacion());
-            cliente.setPrimerNombre(nombres[0]);
-            cliente.setSegundoNombre(nombres[1]);
-
-           
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://34.135.165.97:8002/api/cliente/return/", cliente, String.class);
+            String apellidos[] = persona.getApellidos().split(" ");
             
+            cliente.setTipoIdentificacion(this.tipoIdentificacion[r.nextInt(2)]);
+            cliente.setIdentificacion(persona.getIdentificacion());
+            
+            cliente.setApellidoPaterno(apellidos[0]);
+            cliente.setApellidoMaterno(apellidos[1]);
+            
+            cliente.setNombre1(nombres[0]);
+            cliente.setNombre2(nombres[1]);
+            
+            cliente.setProvincia(persona.getProvincia());
+            cliente.setCanton(persona.getCanton());
+            cliente.setParroquia(persona.getParroquia());
+            
+            cliente.setDireccion(this.direcciones.get(r.nextInt(this.direcciones.size())));
+            
+            cliente.setTelefono("09" + RandomUtils.nextInt(10000001, 99999999));
+            cliente.setEmail(cliente.getApellidoPaterno().substring(0, 2).toUpperCase()
+                    .concat(cliente.getNombre1().toLowerCase())
+                    .concat(this.dominioEmail[r.nextInt(this.dominioEmail.length)]));
+            
+            cliente.setFechaNacimiento(persona.getFechaNacimiento());
+            cliente.setEstadoCivil(persona.getEstadoCivil());
+            
+            
+            log.info("cliente: {}",cliente);
+            
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://34.135.165.97:8002/api/cliente/return/", cliente, String.class);
+            log.info("insertado id: {}",responseEntity.getBody());
             cuenta.setCodCliente(responseEntity.getBody());
+            
+            
             cuenta.setCodProductoPasivo("GanaDiario");
-            /*
-            Generar
-            private String direccion;
-            private String telefono;
-            private String email;
-            */
+            
+            
+            
+          
         }
        
         return RepeatStatus.FINISHED;
