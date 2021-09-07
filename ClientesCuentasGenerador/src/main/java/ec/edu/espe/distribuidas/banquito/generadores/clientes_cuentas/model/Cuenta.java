@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class Cuenta {
     
-    private String codProductoPasivo;
-    private String codCliente;
-    
+    private String codigoProductoPasivo;
+    private String codigoCliente;
+    private String fechaCreacion;
 }

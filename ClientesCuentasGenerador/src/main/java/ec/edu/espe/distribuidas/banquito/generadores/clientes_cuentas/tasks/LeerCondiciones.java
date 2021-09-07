@@ -40,22 +40,27 @@ public class LeerCondiciones implements Tasklet, StepExecutionListener{
     
     @Override
     public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+        
         log.info("Va a ejecutar la tarea leer condiciones");
         log.info("El archivo con condiciones es: {}", this.applicationValues.getConfigFile());
         Properties props = new Properties();
         try {
+            
             Path path = Path.of(this.applicationValues.getConfigFile());
             props.load(new FileInputStream(this.applicationValues.getConfigFile()));
 
             Integer clientes;
             Integer porcentajeGanaDiario;
             Integer porcentajeTarjetaCredito;
-            
+            Integer monthMin;
+            Integer yearMin;
             
             try {
                 clientes = Integer.parseInt(props.getProperty("clientes"));
                 porcentajeGanaDiario = Integer.parseInt(props.getProperty("porcentajeClientesGanaDiario"));
                 porcentajeTarjetaCredito = Integer.parseInt(props.getProperty("porcentajeClientesTarjetaCredito"));
+                monthMin = Integer.parseInt(props.getProperty("monthMin"));
+                yearMin = Integer.parseInt(props.getProperty("yearMin"));
                 log.info("Va a generar {} clientes", clientes);
                 log.info("{} porcentaje cuentas Gana Diario", porcentajeGanaDiario);
                 log.info("{} porcentaje cuentas Tarjeta de Credito", porcentajeTarjetaCredito);
@@ -64,6 +69,8 @@ public class LeerCondiciones implements Tasklet, StepExecutionListener{
                 jobContext.put("clientes", clientes);
                 jobContext.put("porcentGanaDiario", porcentajeGanaDiario);
                 jobContext.put("porcentTajetaCredito", porcentajeTarjetaCredito);
+                jobContext.put("monthMin", monthMin);
+                jobContext.put("yearMin", yearMin);
                 
             } catch (NumberFormatException e) {
                 log.error("Invalid values");

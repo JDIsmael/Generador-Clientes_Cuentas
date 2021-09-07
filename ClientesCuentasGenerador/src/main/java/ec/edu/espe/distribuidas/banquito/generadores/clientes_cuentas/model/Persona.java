@@ -5,7 +5,6 @@
  */
 package ec.edu.espe.distribuidas.banquito.generadores.clientes_cuentas.model;
 
-import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
 
