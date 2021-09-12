@@ -5,6 +5,8 @@
  */
 package ec.edu.espe.distribuidas.banquito.generadores.clientes_cuentas.model;
 
+import java.security.Timestamp;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 /**
@@ -16,5 +18,5 @@ public class Cuenta {
     
     private String codigoProductoPasivo;
     private String codigoCliente;
-    private String fechaCreacion;
+    private LocalDateTime fechaCreacion;
 }

@@ -12,9 +12,16 @@ import ec.edu.espe.distribuidas.banquito.generadores.clientes_cuentas.model.Pers
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
@@ -155,7 +162,7 @@ public class GeneracionClientesCuentas implements Tasklet, StepExecutionListener
             
             log.info("Cuenta: {}", cuenta);
             
-            restTemplate.postForObject("http://52.146.55.208:8004/api/clienteProductoPasivo/generador/", cuenta, String.class);
+            restTemplate.postForObject("http://52.146.55.208:8004/api/clienteProductoPasivo/generador", cuenta, String.class);
         }
 
         return RepeatStatus.FINISHED;
@@ -166,7 +173,7 @@ public class GeneracionClientesCuentas implements Tasklet, StepExecutionListener
         return ExitStatus.COMPLETED;
     }
     
-    private String generarFechaCreacion(Integer monthMin, Integer yearMin) {
+    private LocalDateTime generarFechaCreacion(Integer monthMin, Integer yearMin) throws ParseException {
         int month = 12;
         int day = 28;
         int minDay = (int) LocalDate.of(yearMin, monthMin, 1).toEpochDay();
@@ -174,10 +181,10 @@ public class GeneracionClientesCuentas implements Tasklet, StepExecutionListener
         Random r = new Random();
         long randomDay = minDay + r.nextInt(maxDay - minDay);
 
-        LocalDate randomBirthDate = LocalDate.ofEpochDay(randomDay);
+        LocalDate randomDate = LocalDate.ofEpochDay(randomDay);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedString = randomBirthDate.format(formatter);
-
-        return formattedString;
+        String formattedString = randomDate.atTime(0, 0).format(formatter);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return randomDate.atTime(new Random().nextInt(10) + 7, new Random().nextInt(59));
     }
 }
